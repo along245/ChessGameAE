@@ -42,7 +42,9 @@ ListRef append(ListRef list, void* data);
 
 /** taking two lists and adding each element from the second list to the first list*/
 ListRef concat(ListRef list1, ListRef list2);
-int size(ListRef list);//calculates number of elements.
+
+//calculates number of elements.
+int size(ListRef list);
 /**
 * Return zero if the list has any data or non-zero if it is empty.
 **/

@@ -1,7 +1,7 @@
 #ifndef DRAUGHTS_
 #define DRAUGHTS_
 
-#include<stdio.h>
+#include <stdio.h>
 
 
 #define WHITE_M 'm'
