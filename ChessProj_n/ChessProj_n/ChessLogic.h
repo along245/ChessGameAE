@@ -45,4 +45,18 @@
 #define print_message(message) (printf("%s", message));
 
 
+//board functions
+//prints current board
+void print_board(char board[BOARD_SIZE][BOARD_SIZE]);
+//initializes a board
+void init_board(char board[BOARD_SIZE][BOARD_SIZE]);
+//clears board
+void clear(char board[BOARD_SIZE][BOARD_SIZE]);
+//removes the disc located in loc
+void rm(struct Location loc, char board[BOARD_SIZE][BOARD_SIZE]);
+//sets the given disc in the board
+void set(struct Location loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE]);
+//copies a given board to an empty one 
+void copyBoard(char from[BOARD_SIZE][BOARD_SIZE], char to[BOARD_SIZE][BOARD_SIZE]);
+
 #endif CHESS_
