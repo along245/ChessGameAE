@@ -109,7 +109,7 @@ mmr_PTR getBestChild(void* state,
 	FreeFunc freeState,
 	FreeFunc freeMMR,
 	int(*evaluate) (void* state),
-	int isMaxPlayer);
+	int isMaxPlayer);//
 
 //removes the disc located in loc
 
