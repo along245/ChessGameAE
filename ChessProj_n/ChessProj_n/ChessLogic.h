@@ -4,19 +4,28 @@
 #include <stdio.h>
 
 
-#define WHITE_M 'm'
-#define WHITE_K 'k'
-#define BLACK_M 'M'
-#define BLACK_K 'K'
-#define EMPTY ' '
-#define WHITE_T 1//white turn
-#define BLACK_T -1//black turn
-#define KING 'k'
-#define MAN 'm'
-#define WHITE_COL 'w'
-#define BLACK_COL 'b'
+#define WHITE_KING 'k'
+#define WHITE_ROOK 'r'
+#define WHITE_PAWN 'p'
+#define WHITE_BISHOP 'b'
+#define WHITE_QUEEN 'q'
+#define WHITE_KNIGHT 'n'
+
+#define BLACK_KING 'K'
+#define BLACK_ROOK 'R'
+#define BLACK_PAWN 'P'
+#define BLACK_BISHOP 'B'
+#define BLACK_QUEEN 'Q'
+#define BLACK_KNIGHT 'N'
+
 #define WHITE 1
 #define BLACK -1
+#define EMPTY ' '
+#define WHITE_T WHITE//white turn
+#define BLACK_T BLACK//black turn
+#define WHITE_COL 'w'
+#define BLACK_COL 'b'
+
 
 
 
