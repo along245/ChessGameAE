@@ -10,6 +10,15 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChessLogic.h" />
+    <ClInclude Include="ListUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="List.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{03D4DCAE-F2EE-40D1-9507-1EF74575516E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
