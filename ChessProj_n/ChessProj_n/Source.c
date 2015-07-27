@@ -40,3 +40,4 @@ GameState *loadGame(char *filename){
 	}
 	
 }
+//This is the fucking code
