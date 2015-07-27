@@ -18,13 +18,13 @@
     <ClCompile Include="ChessGameFlow.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="List.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Minimax.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Structs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="List.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
