@@ -39,4 +39,4 @@ GameState *loadGame(char *filename){
 		exit(2);
 	}
 	
-}//
+}
