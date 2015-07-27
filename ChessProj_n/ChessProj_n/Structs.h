@@ -1,7 +1,6 @@
 
 #ifndef STRUCTS_
 #define STRUCTS_
-#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdlib.h>
 #include<string.h>
@@ -33,6 +32,9 @@ typedef struct _GameState{
 	char cur_board[BOARD_SIZE][BOARD_SIZE];
 	int player;//whos turn
 	int score;
+	int gameMode;
+	int difficulty;
+	int userColor;
 	int minmaxDepth;
 } GameState;
 
