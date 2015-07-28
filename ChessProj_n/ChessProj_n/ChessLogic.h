@@ -16,6 +16,8 @@
 #define BLACK_R 'R'
 #define BLACK_Q 'Q'
 #define BLACK_K 'K'
+#define WHITE 1;
+#define BLACK -1;
 
 
 #define EMPTY ' '
@@ -55,8 +57,10 @@ void clear(char board[BOARD_SIZE][BOARD_SIZE]);
 //removes the disc located in loc
 void rm(struct Location loc, char board[BOARD_SIZE][BOARD_SIZE]);
 //sets the given disc in the board
-void set(struct Location loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE]);
+int set(struct Location loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE]);
 //copies a given board to an empty one 
 void copyBoard(char from[BOARD_SIZE][BOARD_SIZE], char to[BOARD_SIZE][BOARD_SIZE]);
+//loading settings to state
+int loadtoState(char *path, GameState* state, int mode);
 
 #endif CHESS_

@@ -22,7 +22,13 @@ typedef struct Location{
 
 // Move, which contains a list of locations
 typedef struct Move{
-	struct List *moves;
+	int tRow;
+	int tCol;
+	int sRow;
+	int sCol;
+	int isCastling; // 1 for SMALL, -1 for BIG, 0 for NONE
+	int isPromoting;
+	char promoteTo;
 } Move, *move_PTR;
 
 
@@ -34,12 +40,47 @@ typedef struct _GameState{
 	int score;
 	int gameMode;
 	int difficulty;
-	int userColor;
-	int minmaxDepth;
+	int userColor; //VALID ONLY IF PVM
+	
+	int B_P;
+	int B_K;
+	int B_Q;
+	int B_N;
+	int B_R;
+	int B_B;
+	int W_P;
+	int W_K;
+	int W_Q;
+	int W_N;
+	int W_R;
+	int W_B;
 } GameState;
 
+//Army Numbers struct
+typedef struct Armies{
+	int BP;
+	int BK;
+	int BQ;
+	int BN;
+	int BR;
+	int BB;
+	int WP;
+	int WK;
+	int WQ;
+	int WN;
+	int WR;
+	int WB;
+}ARMY, *ARMY_PTR;
+
+//Initializes an army
+ARMY_PTR init_army();
+
+//Change the Army
+int editArmy(ARMY_PTR army, char unit, int color, int changer);
+	
+
 //Initializes a gamestate
-GameState* start(char board[BOARD_SIZE][BOARD_SIZE], int depth);
+GameState* start(char board[BOARD_SIZE][BOARD_SIZE], int depth, int next_p, int mode, int user_col);
 
 /**
 * The maximum allowed value to be returned by any evaluation function.
@@ -115,11 +156,11 @@ mmr_PTR getBestChild(void* state,
 
 //removes the disc located in loc
 
-void rm(struct Location loc, char board[BOARD_SIZE][BOARD_SIZE]);
+void rm(LOC_PTR loc, char board[BOARD_SIZE][BOARD_SIZE],char cpy[BOARD_SIZE][BOARD_SIZE]);
 
 //sets the given disc in the board
 
-void set(struct Location loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE]);
+int set(LOC_PTR loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE], char cpy[BOARD_SIZE][BOARD_SIZE]);
 
 //copies a given board to an empty one 
 

@@ -1,3 +1,9 @@
+
+
+
+#include "ChessLogic.h"
+#include "Structs.h"
+
 int compareLocs(LOC_PTR loc1, LOC_PTR loc2){
 	if (((*loc1).col != (*loc2).col) || ((*loc1).row != (*loc2).row)){
 		return 0;
@@ -63,6 +69,16 @@ char manToKing(int row, char man){
 		}
 		else{
 			return man;
+		}
+	}
+}
+
+//copies board from to board to
+void copyBoard(char from[BOARD_SIZE][BOARD_SIZE], char to[BOARD_SIZE][BOARD_SIZE]){
+	int i, j;	
+	for (i = 0; i < BOARD_SIZE; i++){
+		for (j = 0; j < BOARD_SIZE; j++){
+			to[i][j] = from[i][j];
 		}
 	}
 }
@@ -138,180 +154,146 @@ mmr_PTR init_MiniMaxResult(int score, int index){
 	return c1;
 }
 
-GameState *makeLegalMove(GameState *curstate, move_PTR curmove){
-	int toRow;
-	int toCol;
-	int curRow;
-	int curCol;
-	int firstRow;
-	int firstCol;
-	int regMove;
-	char curman;
-	int Keaten;
-	int Meaten;
-	GameState *res;
-	Keaten = 0;
-	Meaten = 0;
-	regMove = 0;
-	res = copyState(curstate);
-	if (res == NULL){
-		return NULL;
-	}
-	(*res).player = (*res).player*(-1);
-	ListRef locs = curmove->moves;
-	firstRow = ((LOC_PTR)headData(locs))->row;
-	firstCol = ((LOC_PTR)headData(locs))->col;
-	curman = (*res).cur_board[firstCol][firstRow];
-	locs = tail(locs);
-	(*res).cur_board[firstCol][firstRow] = EMPTY;
-	if (curman == 'k' || curman == 'K'){ //handle first move seperatley, IF KING
-		toRow = ((LOC_PTR)headData(locs))->row;
-		toCol = ((LOC_PTR)headData(locs))->col;
-		if ((toRow > firstRow && toCol > firstCol) && ((*res).cur_board[toCol - 1][toRow - 1] != EMPTY)){// up right eat	
-			if (TOLOWER((*res).cur_board[toCol - 1][toRow - 1]) == 'k'){
-				Keaten++;
-			}
-			else{
-				Meaten++;
-			}
-			(*res).cur_board[toCol - 1][toRow - 1] = EMPTY;
-			(*res).cur_board[toCol][toRow] = curman;
-
-		}
-		else if ((toRow<firstRow && toCol > firstCol) && ((*res).cur_board[toCol - 1][toRow + 1] != EMPTY)){//down right eat	
-			if (TOLOWER((*res).cur_board[toCol - 1][toRow + 1]) == 'k'){
-				Keaten++;
-			}
-			else{
-				Meaten++;
-			}
-			(*res).cur_board[toCol - 1][toRow + 1] = EMPTY;
-			(*res).cur_board[toCol][toRow] = curman;
-
-		}
-		else if ((toRow < firstRow && toCol < firstCol) && ((*res).cur_board[toCol + 1][toRow + 1] != EMPTY)){// down left eat	
-			if (TOLOWER((*res).cur_board[toCol + 1][toRow + 1]) == 'k'){
-				Keaten++;
-			}
-			else{
-				Meaten++;
-			}
-			(*res).cur_board[toCol - 1][toRow - 1] = EMPTY;
-			(*res).cur_board[toCol][toRow] = curman;
-
-		}
-		else if ((toRow>firstRow && toCol < firstCol) && ((*res).cur_board[toCol + 1][toRow - 1] != EMPTY)){ // up left eat
-			if (TOLOWER((*res).cur_board[toCol + 1][toRow - 1]) == 'k'){
-				Keaten++;
-			}
-			else{
-				Meaten++;
-			}
-			(*res).cur_board[toCol + 1][toRow - 1] = EMPTY;
-			(*res).cur_board[toCol][toRow] = curman;
-
-		}
-		else{ //king regular move
-			(*res).cur_board[toCol][toRow] = curman;
-			regMove = 1;
-		}
-	}
-	else{ // IF MAN
-
-		toRow = ((LOC_PTR)headData(locs))->row;
-		toCol = ((LOC_PTR)headData(locs))->col;
-		if (tail(locs) == NULL && abs(firstRow - toRow) == 1){ //check if regular move		
-			(*res).cur_board[firstCol][firstRow] = EMPTY;
-			(*res).cur_board[toCol][toRow] = manToKing(toRow, curman);
-			regMove = 1;
-		}
-		else{ // man eat
-			curCol = firstCol;
-			curRow = firstRow;
-			(*res).cur_board[firstCol][firstRow] = EMPTY;
-			if (TOLOWER((*res).cur_board[(curCol + toCol) / 2][(curRow + toRow) / 2]) == 'k'){
-				Keaten++;
-			}
-			else{
-				Meaten++;
-			}
-			(*res).cur_board[(curCol + toCol) / 2][(curRow + toRow) / 2] = EMPTY;
-			(*res).cur_board[toCol][toRow] = manToKing(toRow, curman);
-		}
-	}
-	if (!regMove){//NOW ALL PIECES ARE EQUAL, ALL MOVES ARE EATS
-		firstRow = toRow;
-		firstCol = toCol;
-		locs = tail(locs);
-		while (locs != NULL){
-			toRow = ((LOC_PTR)headData(locs))->row;
-			toCol = ((LOC_PTR)headData(locs))->col;
-			(*res).cur_board[firstCol][firstRow] = EMPTY;
-			if (TOLOWER((*res).cur_board[(firstCol + toCol) / 2][(firstCol + toRow) / 2]) == 'k'){
-				Keaten++;
-			}
-			else{
-				Meaten++;
-			}
-			(*res).cur_board[(firstCol + toCol) / 2][(firstRow + toRow) / 2] = EMPTY;
-			(*res).cur_board[toCol][toRow] = curman;
-			firstRow = toRow;
-			firstCol = toCol;
-			locs = tail(locs);
-		}
-		(*res).cur_board[toCol][toRow] = manToKing(toRow, curman);
-
-	}
-	if (curman == 'k' || curman == 'm'){ //player is white
-		(*res).black_kings = (*res).black_kings - Keaten;
-		(*res).black_men = (*res).black_men - Meaten;
-	}
-	else{
-		(*res).white_kings = (*res).white_kings - Keaten;
-		(*res).white_men = (*res).white_men - Meaten;
-	}
-	return res;
+void clear_army(ARMY_PTR army){
+	army->BP = 0;
+	army->BK = 0;
+	army->BQ = 0;
+	army->BN = 0;
+	army->BR = 0;
+	army->BB = 0;
+	army->WP = 0;
+	army->WK = 0;
+	army->WQ = 0;
+	army->WN = 0;
+	army->WR = 0;
+	army->WB = 0;
 }
 
-GameState* start(char board[BOARD_SIZE][BOARD_SIZE], int depth){
+ARMY_PTR init_army(){
+	ARMY_PTR army = (ARMY_PTR)malloc(sizeof(ARMY));
+	if (army == NULL){
+		return NULL;
+	}
+	army->BP = 8;
+	army->BK = 1;
+	army->BQ = 1;
+	army->BN = 2;
+	army->BR = 2;
+	army->BB = 2;
+	army->WP = 8;
+	army->WK = 1;
+	army->WQ = 1;
+	army->WN = 2;
+	army->WR = 2;
+	army->WB = 2;
+}
 
+void init_EmptyState(GameState* emptyState){
+	emptyState = (GameState*)malloc(sizeof(GameState));
+	if (emptyState == NULL){
+		return NULL;
+	}
+}
+
+
+
+GameState *makeLegalMove(GameState *curstate, move_PTR curmove){
+	int toRow=curmove->tRow;
+	int toCol=curmove->tCol;
+	int curRow=curmove->sRow;
+	int curCol=curmove->sCol;
+	char curUnit;
+	GameState *res;		
+	res = copyState(curstate);
+	res->player = curstate->player*(-1);
+	res->cur_board[curRow][curCol] = EMPTY;
+	if (curmove->isCastling){
+		res->cur_board[curRow][curCol] = EMPTY;
+		res->cur_board[toRow][toCol] = EMPTY;
+		if (curRow == 0){//WHITE CASTLEING
+			if (curmove->isCastling == 1){//SMALL			
+				res->cur_board[curRow][curCol + 2] = 'k';
+				res->cur_board[toRow][toCol - 2] = 'r';
+			}
+			else{//BIG
+				res->cur_board[curRow][curCol - 2] = 'k';
+				res->cur_board[toRow][toCol + 3] = 'r';
+			}
+		}
+		else if (curRow==7){ // BLACK CASTLEING
+			if (curmove->isCastling == 1){//SMALL			
+				res->cur_board[curRow][curCol + 2] = 'K';
+				res->cur_board[toRow][toCol - 2] = 'R';
+			}
+			else{//BIG
+				res->cur_board[curRow][curCol - 2] = 'K';
+				res->cur_board[toRow][toCol + 3] = 'R';
+			}
+		}
+	}//END OF CASTELING
+	else if (curmove->isPromoting){
+		res->cur_board[curRow][curCol] = EMPTY;
+		switch (curmove->promoteTo){
+		case 'q':
+			res->cur_board[toRow][toCol] = 'q';
+			break;
+		case 'b':
+			res->cur_board[toRow][toCol] = 'b';
+			break;
+		case 'r':
+			res->cur_board[toRow][toCol] = 'r';
+			break;
+		case 'n':
+			res->cur_board[toRow][toCol] = 'n';
+			break;
+		case 'p':
+			res->cur_board[toRow][toCol] = 'p';
+			break;
+		case 'Q':
+			res->cur_board[toRow][toCol] = 'Q';
+			break;
+		case 'B':
+			res->cur_board[toRow][toCol] = 'B';
+			break;
+		case 'R':
+			res->cur_board[toRow][toCol] = 'R';
+			break;
+		case 'N':
+			res->cur_board[toRow][toCol] = 'N';
+			break;
+		case 'P':
+			res->cur_board[toRow][toCol] = 'P';
+			break;
+		default:
+			break;
+		}
+	}
+	else{
+		curUnit = curstate->cur_board[curRow][curCol];
+		res->cur_board[curRow][curCol] = EMPTY;
+		res->cur_board[toRow][toCol] = curUnit;
+	}
+
+	
+}
+
+
+GameState* start(char board[BOARD_SIZE][BOARD_SIZE], int depth, int next_p, int mode, int user_col){
 	GameState* state0;
-	int blackM, blackK, whiteM, whiteK, i, j;
-	blackM = 0;
-	blackK = 0;
-	whiteM = 0;
-	whiteK = 0;
 	state0 = (GameState*)malloc(sizeof(GameState));
 	if (state0 == NULL){
 		return NULL;
 	}
-	for (i = 0; i < BOARD_SIZE; i++){
-		for (j = 0; j < BOARD_SIZE; j++){
-			(*state0).cur_board[i][j] = board[i][j];
-			switch (board[i][j]){
-			case 'M':
-				blackM++;
-				break;
-			case 'K':
-				blackK++;
-				break;
-			case 'm':
-				whiteM++;
-				break;
-			case 'k':
-				whiteK++;
-				break;
-			default:
-				break;
-			}
-		}
+	copyBoard(board, state0->cur_board);
+	(*state0).difficulty = depth; //1-4 for reg, 5 for best
+	(*state0).player = next_p;
+	if (mode == 2){//PVM
+		state0->userColor = user_col;
 	}
-	(*state0).minmaxDepth = depth;
-	(*state0).player = WHITE;
-	(*state0).black_kings = blackK;
-	(*state0).black_men = blackM;
-	(*state0).white_kings = whiteK;
-	(*state0).white_men = whiteM;
+	else{//PVP
+		state0->userColor = 0;
+	}
+	state0->gameMode = mode;		
 	return state0;
 }
 
@@ -322,7 +304,7 @@ void clear(char board[BOARD_SIZE][BOARD_SIZE]){
 	j = 0;
 	while (i < BOARD_SIZE){
 		j = 0;
-		while (j<BOARD_SIZE){
+		while (j < BOARD_SIZE){
 			*(*(board + i) + j) = EMPTY;
 			j++;
 		}
@@ -330,44 +312,46 @@ void clear(char board[BOARD_SIZE][BOARD_SIZE]){
 	}
 }
 
-void set(struct Location loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE]){
-	if ((loc.row + loc.col) % 2 != 0 || (loc.row >= 10 || loc.col >= 10)){
+int set(LOC_PTR loc, char a, char b, char board[BOARD_SIZE][BOARD_SIZE], char cpy[BOARD_SIZE][BOARD_SIZE]){
+	if (loc->row >= 8 || loc->col >= 8){
 		print_message(WRONG_POSITION);
 	}
 	else{
-		if (a == 'b'){
-			if (b == KING || loc.row == 0){
-				*(*(board + loc.col) + loc.row) = 'K';
-			}
-			else{
-				*(*(board + loc.col) + loc.row) = 'M';
-			}
-
-
+		ARMY_PTR check;
+		int row = loc->row;
+		int col = loc->col;
+		int res;
+		putInBoard(cpy, row, col, a, b);
+		check = boardToArmy(cpy);
+		if (check == NULL){
+			return -1;
+		}
+		res = ifArmyOK(check);
+		free(check);
+		if (res == 1){
+			putInBoard(board, row, col, a, b);
 		}
 		else{
-			if (b == KING || loc.row == 9){
-				*(*(board + loc.col) + loc.row) = 'k';
-			}
-			else{
-				*(*(board + loc.col) + loc.row) = 'm';
-			}
+			printf(NO_PIECE);
 		}
 	}
+	return 0;
 }
 
-void rm(struct Location loc, char board[BOARD_SIZE][BOARD_SIZE]){
-	int row = loc.row;
-	int col = loc.col;
-	if ((row >= 10 || col >= 10) || ((col + row) % 2 != 0)){
+
+		
+	
+
+
+void rm(LOC_PTR loc, char board[BOARD_SIZE][BOARD_SIZE]){
+	int row = loc->row;
+	int col = loc->col;
+	if (row >= 8 || col >= 8){
 		print_message(WRONG_POSITION);
 	}
 	else{
-		*(*(board + loc.col) + loc.row) = EMPTY;
+		board[row][col] = EMPTY;
 	}
-
-
-
 }
 
 void print_line(){
@@ -403,82 +387,186 @@ void init_board(char board[BOARD_SIZE][BOARD_SIZE]){
 	int i, j;
 	for (i = 0; i < BOARD_SIZE; i++){
 		for (j = 0; j < BOARD_SIZE; j++){
-			if ((i + j) % 2 == 0){
-				if (j <= 3){
-
-					board[i][j] = WHITE_M;
+			if (i == 1){
+				board[i][j] = WHITE_P;
+			}
+			else if (i == 6){
+				board[i][j] = BLACK_P;
+			}
+			else if (i == 0){
+				if (j == 0 || j == 7){
+					board[i][j] =  WHITE_R;
 				}
-				else if (j >= 6){
-
-					board[i][j] = BLACK_M;
+				else if (j == 1 || j == 6){
+					board[i][j] = WHITE_N;
 				}
-				else{
-					board[i][j] = EMPTY;
+				else if (j == 2 || j == 5){
+					board[i][j] = WHITE_B;
+				}
+				else if (j == 3){
+					board[i][j] = WHITE_Q;
+				}
+				else if (j == 4){
+					board[i][j] = WHITE_K;
 				}
 			}
-			else{
-				board[i][j] = EMPTY;
+			else if (i == 7){
+				if (j == 0 || j == 7){
+					board[i][j] = BLACK_R;
+				}
+				else if (j == 1 || j == 6){
+					board[i][j] = BLACK_N;
+				}
+				else if (j == 2 || j == 5){
+					board[i][j] = BLACK_B;
+				}
+				else if (j == 3){
+					board[i][j] = BLACK_Q;
+				}
+				else if (j == 4){
+					board[i][j] = BLACK_K;
+				}
+
 			}
+			
+
 		}
 	}
 }
 
 int evaluate(void* state){
-	int i, j, score = 0;
-	int white = 0;
-	int black = 0;
-	score = 0;
-	for (i = 0; i<BOARD_SIZE; i++){
-		for (j = 0; j<BOARD_SIZE; j++){
-			if ((*(GameState*)(state)).cur_board[i][j] == WHITE_M){
-				score++;
-				white++;
-			}
-			else if ((*(GameState*)(state)).cur_board[i][j] == WHITE_K){
-				score += 3;
-				white++;
-			}
-			else if ((*(GameState*)(state)).cur_board[i][j] == BLACK_M){
-				score--;
-				black++;
-			}
-			else if ((*(GameState*)(state)).cur_board[i][j] == BLACK_K){
-				score -= 3;
-				black++;
-			}
-			else{
-				continue;
-			}
-		}
-	}
-	if (black == 0 && white == 0){
-		score = 200;
-	}
-	else if (black == 0){
-		score = 100;
-	}
-	else if (white == 0){
-		score = -100;
-	}
-
-
+	int i, j, score = 0;	
+	score = 0;	
 	return score;
 }
 
 int ifStartOK(GameState* startstate){
 	int res = 1;
-	int BK = (*startstate).black_kings;
-	int WK = (*startstate).white_kings;
-	int WM = (*startstate).white_men;
-	int BM = (*startstate).black_men;
-	if (BK + WK + WM + BM == 0){
+	
+	if (startstate->B_K+startstate->W_K !=2){
 		res = 0;
 	}
-	else if (BK + BM == 0 || WK + WM == 0){
+	
+	return res;
+}
+
+int ifArmyOK(ARMY_PTR army){
+	int res;
+	
+	if (army->BR > 2 || army->BB >2 || army->BN >2 || army->WR >2 || army->WB>2 || army->WN>2){
 		res = 0;
 	}
-	if (BK + BM>20 || WK + WM>20){
+	if (army->BP>8 || army->WP>8){
 		res = 0;
 	}
 	return res;
+
 }
+
+ARMY_PTR boardToArmy(char board[BOARD_SIZE][BOARD_SIZE]){
+	int i, j;
+	ARMY_PTR army = (ARMY_PTR)malloc(sizeof(ARMY));
+	if (army == NULL){
+		return NULL;
+	}
+	for (i = 0; i < 8; i++){
+		for (j = 0; j < 8; j++){
+			switch (board[i][j]){
+			case 'p':
+				army->WP++;
+				break;
+			case 'k':
+				army->WK++;
+				break;
+			case 'q':
+				army->WQ++;
+				break;
+			case 'n':
+				army->WN++;
+				break;
+			case 'b':
+				army->WB++;
+				break;
+			case 'r':
+				army->WR++;
+				break;
+			case 'P':
+				army->BP++;
+				break;
+			case 'K':
+				army->BK++;
+				break;
+			case 'Q':
+				army->BQ++;
+				break;
+			case 'N':
+				army->BN++;
+				break;
+			case 'B':
+				army->BB++;
+				break;
+			case 'R':
+				army->BR++;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	return army;
+}
+
+void putInBoard(char cpy[BOARD_SIZE][BOARD_SIZE], int col, int row, char a, char b){
+	if (a == 'b'){
+		switch (b){
+		case 'p':
+			cpy[row][col] = 'P';
+			break;
+		case 'k':
+			cpy[row][col] = 'K';
+			break;
+		case 'q':
+			cpy[row][col] = 'Q';
+			break;
+		case 'n':
+			cpy[row][col] = 'N';
+			break;
+		case 'b':
+			cpy[row][col] = 'B';
+			break;
+		case 'r':
+			cpy[row][col] = 'R';
+			break;
+		default:
+			break;
+		}
+	}
+	else if (a == 'w'){
+		switch (b){
+		case 'p':
+			cpy[row][col] = 'p';
+			break;
+		case 'k':
+			cpy[row][col] = 'k';
+			break;
+		case 'q':
+			cpy[row][col] = 'q';
+			break;
+		case 'n':
+			cpy[row][col] = 'n';
+			break;
+		case 'b':
+			cpy[row][col] = 'b';
+			break;
+		case 'r':
+			cpy[row][col] = 'r';
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+
+

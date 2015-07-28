@@ -14,6 +14,7 @@
     <ClCompile Include="ChessGameFlow.c" />
     <ClCompile Include="List.c" />
     <ClCompile Include="Minimax.c" />
+    <ClCompile Include="Source.c" />
     <ClCompile Include="Structs.c" />
   </ItemGroup>
   <ItemGroup>
